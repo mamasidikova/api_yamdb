@@ -39,7 +39,7 @@ class Title(models.Model):
     # валидация year: в модели или сериализаторе
     rating = models.IntegerField(
         verbose_name='Рейтинг на основе отзывов',
-        default=None
+        # default=None
     )
     description = models.CharField(
         verbose_name='Описание',

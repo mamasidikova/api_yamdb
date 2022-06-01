@@ -54,8 +54,9 @@ class ReadOnlyTitleSerializer(serializers.ModelSerializer):
     def get_rating(self, obj):
         all_reviews = obj.reviews.all()
         avg_rating = all_reviews.aggregate(Avg('score'))
-        if 
-        return 
+        if avg_rating is not None:
+            return avg_rating
+            
 
 class ReviewSerializer(serializers.ModelSerializer):
     pass
