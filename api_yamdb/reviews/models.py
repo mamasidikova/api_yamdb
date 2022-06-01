@@ -49,13 +49,21 @@ class Title(models.Model):
     )
     genre = models.ManyToManyField(
         Genre,
-        through='GenreTitle'
+        through='GenreTitle',
     )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
         related_name='titles',
+        null=True
     )
+
+    def validate_year(self, value):
+        if value > timezone.now().year:
+            raise ValidationError(
+                ('Проверьте год выхода произведения!')
+            )
+
 
     def __str__(self):
         return self.name
@@ -74,11 +82,3 @@ class GenreTitle(models.Model):
 
     def __str__(self):
         return f'{self.title} относится к жанру(жанрам): {self.genre}'
-
-
-class Review(models.Model):
-    pass
-
-
-class Comment(models.Model):
-    pass
