@@ -23,3 +23,6 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class TitleSerializer(serializers.ModelSerializer):
     pass
+
+    class Meta:
+        pass
