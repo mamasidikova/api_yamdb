@@ -1,4 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+
+class User(AbstractUser):
+    pass
 
 
 class Category(models.Model):
@@ -34,12 +39,13 @@ class Title(models.Model):
     )
     year = models.IntegerField(
         verbose_name='Год выпуска',
-        max_length=4
     )
     # валидация year: в модели или сериализаторе
     rating = models.IntegerField(
         verbose_name='Рейтинг на основе отзывов',
-        # default=None
+        null=True,
+        blank=True,
+        default=None
     )
     description = models.CharField(
         verbose_name='Описание',
@@ -64,7 +70,6 @@ class Title(models.Model):
                 ('Проверьте год выхода произведения!')
             )
 
-
     def __str__(self):
         return self.name
 
@@ -82,3 +87,11 @@ class GenreTitle(models.Model):
 
     def __str__(self):
         return f'{self.title} относится к жанру(жанрам): {self.genre}'
+
+
+class Review(models.Model):
+    pass
+
+
+class Comment(models.Model):
+    pass

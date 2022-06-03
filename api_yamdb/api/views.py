@@ -45,7 +45,8 @@ class GenreViewSet(GetPostDeleteViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    http_method_names = ['get', 'put', 'patch', 'delete']
+    pagination_class = LimitOffsetPagination
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     permission_classes = [IsAdminSuperuserOrReadOnly]
     filter_backends = (DjangoFilterBackend,)
     # filterset_fields = ('category', 'genre', 'name', 'year',)
