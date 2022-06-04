@@ -35,11 +35,11 @@ class User(AbstractUser):
         blank=True
     )
 
-    USERNAME_FIELD = 'email' # идентификатор для обращения
+    USERNAME_FIELD = 'email' # Свойство USERNAME_FIELD сообщает нам, какое поле мы будем использовать для входа в систему. В данном случае мы хотим использовать почту.
     REQUIRED_FIELDS = ['username'] #обязательное поле
 
 
-    @property
+    @property # декоратор @property возвращает атрибут свойства, позволяет обращаться к методам is_moderator() и т.п , как к свойствам в методе has_permission, has object_permissio
     def is_moderator(self):
         return self.role == self.MODERATOR
 
