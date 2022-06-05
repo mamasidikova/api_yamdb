@@ -1,10 +1,11 @@
-from enum import unique
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-from pytz import timezone
 import datetime as dt
+from enum import unique
 
+from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
+from django.db import models
+from pytz import timezone
+
 
 class User(AbstractUser):
     ADMIN = 'admin'

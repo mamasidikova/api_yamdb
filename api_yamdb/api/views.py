@@ -9,13 +9,16 @@ from rest_framework.pagination import (LimitOffsetPagination,
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Genre, Review, Title, User
-from .permissions import (IsAdmin, IsAdminOrReadOnly,
-                          IsAdminModeratorOwnerOrReadOnly)
-from .serializers import (RegistrationSerializer,
-                          TokenSerializer, UserEditSerializer,
-                          UserSerializer)
+
 from .filters import TitleFilter
 from .mixins import GetPostDeleteViewSet
+from .permissions import (IsAdmin, IsAdminModeratorOwnerOrReadOnly,
+                          IsAdminOrReadOnly)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, ReadOnlyTitleSerializer,
+                          RegistrationSerializer, ReviewSerializer,
+                          TitleSerializer, TokenSerializer, UserEditSerializer,
+                          UserSerializer)
 
 
 @api_view(["POST"])
@@ -134,7 +137,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-   """Просмотр и редактирование отзывов на  произведения"""
+    """Просмотр и редактирование отзывов на  произведения"""
     serializer_class = ReviewSerializer
     permission_classes = (IsAdminModeratorOwnerOrReadOnly,)
     pagination_class = PageNumberPagination
@@ -150,7 +153,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-  """Просмотр и редактирование комментариев к отзывам"""
+    """Просмотр и редактирование комментариев к отзывам"""
     serializer_class = CommentSerializer
     permission_classes = (IsAdminModeratorOwnerOrReadOnly,)
     pagination_class = PageNumberPagination
