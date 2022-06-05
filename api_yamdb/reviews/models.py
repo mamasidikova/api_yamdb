@@ -1,20 +1,21 @@
+from enum import unique
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from pytz import timezone
 
 
-SCORE = (
-    ('1', '1'),
-    ('2', '2'),
-    ('3', '3'),
-    ('4', '4'),
-    ('5', '5'),
-    ('6', '6'),
-    ('7', '7'),
-    ('8', '8'),
-    ('9', '9'),
-    ('10', '10'),
-)
+# SCORE = (
+#     ('1', '1'),
+#     ('2', '2'),
+#     ('3', '3'),
+#     ('4', '4'),
+#     ('5', '5'),
+#     ('6', '6'),
+#     ('7', '7'),
+#     ('8', '8'),
+#     ('9', '9'),
+#     ('10', '10'),
+# )
 
 
 class User(AbstractUser):
@@ -49,11 +50,11 @@ class User(AbstractUser):
         blank=True
     )
 
-    USERNAME_FIELD = 'email' # идентификатор для обращения
+    USERNAME_FIELD = 'email' # Свойство USERNAME_FIELD сообщает нам, какое поле мы будем использовать для входа в систему. В данном случае мы хотим использовать почту.
     REQUIRED_FIELDS = ['username'] #обязательное поле
 
 
-    @property
+    @property # декоратор @property возвращает атрибут свойства, позволяет обращаться к методам is_moderator() и т.п , как к свойствам в методе has_permission, has object_permissio
     def is_moderator(self):
         return self.role == self.MODERATOR
 
@@ -157,19 +158,34 @@ class GenreTitle(models.Model):
 
 
 class Review(models.Model):
-    title_id = models.ForeignKey(
+    title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='reviews')
     text = models.TextField()
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews')
-    score = models.CharField(max_length=2, choices = SCORE)
-    pub_date = models.DateTimeField('Дата публикации отзыва', auto_now_add=True)
+    score = models.IntegerField(verbose_name='Рейтинг',)
+    pub_date = models.DateTimeField(verbose_name='Дата публикации отзыва',
+                                    auto_now_add=True)
+
+    def validators_score(self, value):
+        if value < 1 and value > 10:
+            raise ValidationError(
+                ('Рейтинг может быть от 1 до 10')
+            )
+    
+    class Meta:
+        unique_together = ('title', 'author')
+        ordering = ['pub_date']
 
 
 class Comment(models.Model):
-    review_id = models.ForeignKey(
+    review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name='comments')
     text = models.TextField()
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='comments')
-    pub_date = models.DateTimeField('Дата публикации комментария', auto_now_add=True)
+    pub_date = models.DateTimeField(verbose_name='Дата публикации отзыва',
+                                    auto_now_add=True)
+
+    class Meta:
+        ordering = ['pub_date']
