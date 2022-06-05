@@ -1,5 +1,8 @@
-from django.db import models
+import datetime as dt
+
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
+from django.db import models
 
 
 class User(AbstractUser):
@@ -18,6 +21,11 @@ class Category(models.Model):
     def __str__(self):
         self.name
 
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
 
 class Genre(models.Model):
     name = models.CharField(
@@ -31,6 +39,11 @@ class Genre(models.Model):
     def __str__(self):
         self.name
 
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+
 
 class Title(models.Model):
     name = models.CharField(
@@ -40,7 +53,6 @@ class Title(models.Model):
     year = models.IntegerField(
         verbose_name='Год выпуска',
     )
-    # валидация year: в модели или сериализаторе
     rating = models.IntegerField(
         verbose_name='Рейтинг на основе отзывов',
         null=True,
@@ -56,22 +68,30 @@ class Title(models.Model):
     genre = models.ManyToManyField(
         Genre,
         through='GenreTitle',
+        verbose_name='Жанр',
     )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
         related_name='titles',
-        null=True
+        null=True,
+        verbose_name='Категория'
     )
 
     def validate_year(self, value):
-        if value > timezone.now().year:
+        year = dt.date.today().year
+        if value > year:
             raise ValidationError(
                 ('Проверьте год выхода произведения!')
             )
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
 
 
 class GenreTitle(models.Model):
