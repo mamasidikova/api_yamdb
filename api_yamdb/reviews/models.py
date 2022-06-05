@@ -1,9 +1,10 @@
+from enum import unique
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+from pytz import timezone
 import datetime as dt
 
-from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
-from django.db import models
-
 
 class User(AbstractUser):
     ADMIN = 'admin'
@@ -45,6 +46,7 @@ class User(AbstractUser):
     def is_moderator(self):
         return self.role == self.MODERATOR
 
+      
     @property
     def is_admin(self):
         return self.role == self.ADMIN
@@ -162,9 +164,35 @@ class GenreTitle(models.Model):
 
 
 class Review(models.Model):
-    pass
+    title = models.ForeignKey(
+        Title, on_delete=models.CASCADE, related_name='reviews')
+    text = models.TextField()
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='reviews')
+    score = models.IntegerField(verbose_name='Рейтинг',)
+    pub_date = models.DateTimeField(verbose_name='Дата публикации отзыва',
+                                    auto_now_add=True)
+
+    def validators_score(self, value):
+        if value < 1 and value > 10:
+            raise ValidationError(
+                ('Рейтинг может быть от 1 до 10')
+            )
+    
+    class Meta:
+        unique_together = ('title', 'author')
+        ordering = ['pub_date']
 
 
 class Comment(models.Model):
-    pass
+    review = models.ForeignKey(
+        Review, on_delete=models.CASCADE, related_name='comments')
+    text = models.TextField()
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='comments')
+    pub_date = models.DateTimeField(verbose_name='Дата публикации отзыва',
+                                    auto_now_add=True)
+
+    class Meta:
+        ordering = ['pub_date']
 

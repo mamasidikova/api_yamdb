@@ -1,3 +1,5 @@
+from rest_framework import serializers
+from rest_framework.relations import SlugRelatedField
 from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -64,7 +66,6 @@ class TokenSerializer(serializers.Serializer):
     confirmation_code = serializers.CharField()
 
 
-
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -125,13 +126,32 @@ class ReadOnlyTitleSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    """ Осуществляет сериализацию и десериализацию объектов Review. """
-    pass
+  """ Осуществляет сериализацию и десериализацию объектов Review. """
+    author = SlugRelatedField(slug_field='username', read_only=True)
+
+    def validate(self, data):
+        title_id = self.context['view'].kwargs.get('title_id')
+        user = self.context['request'].user
+        if self.context['request'].method == 'POST':
+            if Review.objects.filter(title=title_id, author=user).exists():
+                raise ValidationError(
+                    'Вы уже оставляли отзыв на это произведение.'
+                )
+        return data
+
+    class Meta:
+        model = Review
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    """ Осуществляет сериализацию и десериализацию объектов Comment. """
-    pass
+  """ Осуществляет сериализацию и десериализацию объектов Comment. """
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
 
-
+    class Meta:
+        model = Comment
+        fields = ('id', 'text', 'author', 'pub_date')
 
