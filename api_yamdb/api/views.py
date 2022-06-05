@@ -13,7 +13,10 @@ from .permissions import (IsAdmin, IsAdminOrReadOnly,
                           IsAdminModeratorOwnerOrReadOnly)
 from .serializers import (RegistrationSerializer,
                           TokenSerializer, UserEditSerializer,
-                          UserSerializer)
+                          UserSerializer, CategorySerializer,
+                          GenreSerializer, TitleSerializer,
+                          ReadOnlyTitleSerializer, ReviewSerializer,
+                          CommentSerializer)
 from .filters import TitleFilter
 from .mixins import GetPostDeleteViewSet
 
@@ -134,7 +137,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-   """Просмотр и редактирование отзывов на  произведения"""
+    """Просмотр и редактирование отзывов на  произведения"""
     serializer_class = ReviewSerializer
     permission_classes = (IsAdminModeratorOwnerOrReadOnly,)
     pagination_class = PageNumberPagination
@@ -150,7 +153,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-  """Просмотр и редактирование комментариев к отзывам"""
+    """Просмотр и редактирование комментариев к отзывам"""
     serializer_class = CommentSerializer
     permission_classes = (IsAdminModeratorOwnerOrReadOnly,)
     pagination_class = PageNumberPagination
@@ -167,4 +170,3 @@ class CommentViewSet(viewsets.ModelViewSet):
             title=self.kwargs.get('title_id')
         )
         serializer.save(author=self.request.user, review=review)
-

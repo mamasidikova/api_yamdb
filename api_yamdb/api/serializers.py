@@ -126,7 +126,7 @@ class ReadOnlyTitleSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-  """ Осуществляет сериализацию и десериализацию объектов Review. """
+    """ Осуществляет сериализацию и десериализацию объектов Review. """
     author = SlugRelatedField(slug_field='username', read_only=True)
 
     def validate(self, data):
@@ -145,7 +145,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-  """ Осуществляет сериализацию и десериализацию объектов Comment. """
+    """ Осуществляет сериализацию и десериализацию объектов Comment. """
     author = serializers.SlugRelatedField(
         read_only=True,
         slug_field='username'
