@@ -1,10 +1,9 @@
-from enum import unique
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-from pytz import timezone
 import datetime as dt
 
+from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
+from django.db import models
+
 
 class User(AbstractUser):
     ADMIN = 'admin'
@@ -41,27 +40,23 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-
     @property
     def is_moderator(self):
         return self.role == self.MODERATOR
 
-      
     @property
     def is_admin(self):
         return self.role == self.ADMIN
 
-    
     @property
     def is_user(self):
         return self.role == self.USER
 
-    
     class Meta:
         ordering = ['username']
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-        
+
 
 class Category(models.Model):
     name = models.CharField(
@@ -178,7 +173,7 @@ class Review(models.Model):
             raise ValidationError(
                 ('Рейтинг может быть от 1 до 10')
             )
-    
+
     class Meta:
         unique_together = ('title', 'author')
         ordering = ['pub_date']

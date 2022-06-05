@@ -11,15 +11,15 @@ class UserSerializer(serializers.ModelSerializer):
     """ Осуществляет сериализацию и десериализацию объектов User. """
     username = serializers.CharField(
         validators=[
-            UniqueValidator(queryset=User.objects.all(), 
-            message=("Username already exists"))
+            UniqueValidator(queryset=User.objects.all(),
+                            message=("Username already exists"))
         ],
         required=True,
     )
     email = serializers.EmailField(
         validators=[
             UniqueValidator(queryset=User.objects.all(),
-            message=("Email already exists"))
+                            message=("Email already exists"))
         ]
     )
 
@@ -154,4 +154,3 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'text', 'author', 'pub_date')
-

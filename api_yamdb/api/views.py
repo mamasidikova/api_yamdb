@@ -8,6 +8,9 @@ from rest_framework.pagination import (LimitOffsetPagination,
                                        PageNumberPagination)
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
+
+from .filters import TitleFilter
+from .mixins import GetPostDeleteViewSet
 from reviews.models import Category, Genre, Review, Title, User
 from .permissions import (IsAdmin, IsAdminOrReadOnly,
                           IsAdminModeratorOwnerOrReadOnly)
@@ -19,12 +22,20 @@ from .serializers import (RegistrationSerializer,
                           CommentSerializer)
 from .filters import TitleFilter
 from .mixins import GetPostDeleteViewSet
+from .permissions import (IsAdmin, IsAdminModeratorOwnerOrReadOnly,
+                          IsAdminOrReadOnly)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, ReadOnlyTitleSerializer,
+                          RegistrationSerializer, ReviewSerializer,
+                          TitleSerializer, TokenSerializer, UserEditSerializer,
+                          UserSerializer)
 
 
 @api_view(["POST"])
 @permission_classes([permissions.AllowAny])
 def register(request):
-    """Отправка письма с кодом подтверждения (confirmation_code) на адрес email"""
+    """Отправка письма с кодом подтверждения"""
+    """(confirmation_code) на адрес email"""
     serializer = RegistrationSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
@@ -76,7 +87,7 @@ class UserViewSet(viewsets.ModelViewSet):
             "get",
             "patch",
         ],
-        detail=False, 
+        detail=False,
         url_path="me",
         permission_classes=[permissions.IsAuthenticated],
         serializer_class=UserEditSerializer,
