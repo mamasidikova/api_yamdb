@@ -24,7 +24,8 @@ from .serializers import (CategorySerializer, CommentSerializer,
 @api_view(["POST"])
 @permission_classes([permissions.AllowAny])
 def register(request):
-    """Отправка письма с кодом подтверждения (confirmation_code) на адрес email"""
+    """Отправка письма с кодом подтверждения"""
+    """(confirmation_code) на адрес email"""
     serializer = RegistrationSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
@@ -76,7 +77,7 @@ class UserViewSet(viewsets.ModelViewSet):
             "get",
             "patch",
         ],
-        detail=False, 
+        detail=False,
         url_path="me",
         permission_classes=[permissions.IsAuthenticated],
         serializer_class=UserEditSerializer,
@@ -170,4 +171,3 @@ class CommentViewSet(viewsets.ModelViewSet):
             title=self.kwargs.get('title_id')
         )
         serializer.save(author=self.request.user, review=review)
-
