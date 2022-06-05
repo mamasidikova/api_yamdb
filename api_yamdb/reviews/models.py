@@ -2,21 +2,9 @@ from enum import unique
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from pytz import timezone
+import datetime as dt
 
-
-# SCORE = (
-#     ('1', '1'),
-#     ('2', '2'),
-#     ('3', '3'),
-#     ('4', '4'),
-#     ('5', '5'),
-#     ('6', '6'),
-#     ('7', '7'),
-#     ('8', '8'),
-#     ('9', '9'),
-#     ('10', '10'),
-# )
-
+from django.core.exceptions import ValidationError
 
 class User(AbstractUser):
     ADMIN = 'admin'
@@ -50,14 +38,15 @@ class User(AbstractUser):
         blank=True
     )
 
-    USERNAME_FIELD = 'email' # Свойство USERNAME_FIELD сообщает нам, какое поле мы будем использовать для входа в систему. В данном случае мы хотим использовать почту.
-    REQUIRED_FIELDS = ['username'] #обязательное поле
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
 
-    @property # декоратор @property возвращает атрибут свойства, позволяет обращаться к методам is_moderator() и т.п , как к свойствам в методе has_permission, has object_permissio
+    @property
     def is_moderator(self):
         return self.role == self.MODERATOR
 
+      
     @property
     def is_admin(self):
         return self.role == self.ADMIN
@@ -72,7 +61,7 @@ class User(AbstractUser):
         ordering = ['username']
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-
+        
 
 class Category(models.Model):
     name = models.CharField(
@@ -85,6 +74,11 @@ class Category(models.Model):
 
     def __str__(self):
         self.name
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
 
 
 class Genre(models.Model):
@@ -99,6 +93,11 @@ class Genre(models.Model):
     def __str__(self):
         self.name
 
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+
 
 class Title(models.Model):
     name = models.CharField(
@@ -108,7 +107,6 @@ class Title(models.Model):
     year = models.IntegerField(
         verbose_name='Год выпуска',
     )
-    # валидация year: в модели или сериализаторе
     rating = models.IntegerField(
         verbose_name='Рейтинг на основе отзывов',
         null=True,
@@ -124,22 +122,30 @@ class Title(models.Model):
     genre = models.ManyToManyField(
         Genre,
         through='GenreTitle',
+        verbose_name='Жанр',
     )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
         related_name='titles',
-        null=True
+        null=True,
+        verbose_name='Категория'
     )
 
     def validate_year(self, value):
-        if value > timezone.now().year:
+        year = dt.date.today().year
+        if value > year:
             raise ValidationError(
                 ('Проверьте год выхода произведения!')
             )
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
 
 
 class GenreTitle(models.Model):
@@ -189,3 +195,4 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ['pub_date']
+

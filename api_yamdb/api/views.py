@@ -1,25 +1,21 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import (LimitOffsetPagination,
                                        PageNumberPagination)
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-
-from .mixins import GetPostDeleteViewSet
-from reviews.models import User, Title, Review, Category, Genre
+from reviews.models import Category, Genre, Review, Title, User
 from .permissions import (IsAdmin, IsAdminOrReadOnly,
                           IsAdminModeratorOwnerOrReadOnly)
 from .serializers import (RegistrationSerializer,
                           TokenSerializer, UserEditSerializer,
-                          UserSerializer,  TitleSerializer,
-                          ReviewSerializer, CommentSerializer,
-                          CategorySerializer, GenreSerializer,
-                          TitleSerializer, ReadOnlyTitleSerializer)
+                          UserSerializer)
 from .filters import TitleFilter
+from .mixins import GetPostDeleteViewSet
 
 
 @api_view(["POST"])
@@ -78,7 +74,7 @@ class UserViewSet(viewsets.ModelViewSet):
             "patch",
         ],
         detail=False, 
-        url_path="me", #определяем дополнительный эндпоинт /api/v1/users/me/
+        url_path="me",
         permission_classes=[permissions.IsAuthenticated],
         serializer_class=UserEditSerializer,
     )
@@ -100,6 +96,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(GetPostDeleteViewSet):
+    """Просмотр и редактирование категорий произведений"""
     lookup_field = "slug"
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -110,6 +107,7 @@ class CategoryViewSet(GetPostDeleteViewSet):
 
 
 class GenreViewSet(GetPostDeleteViewSet):
+    """Просмотр и редактирование жанров произведений"""
     lookup_field = "slug"
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
@@ -120,6 +118,7 @@ class GenreViewSet(GetPostDeleteViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    """Просмотр и редактирование  произведений"""
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     pagination_class = LimitOffsetPagination
@@ -135,6 +134,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+   """Просмотр и редактирование отзывов на  произведения"""
     serializer_class = ReviewSerializer
     permission_classes = (IsAdminModeratorOwnerOrReadOnly,)
     pagination_class = PageNumberPagination
@@ -150,6 +150,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+  """Просмотр и редактирование комментариев к отзывам"""
     serializer_class = CommentSerializer
     permission_classes = (IsAdminModeratorOwnerOrReadOnly,)
     pagination_class = PageNumberPagination
@@ -166,3 +167,4 @@ class CommentViewSet(viewsets.ModelViewSet):
             title=self.kwargs.get('title_id')
         )
         serializer.save(author=self.request.user, review=review)
+
