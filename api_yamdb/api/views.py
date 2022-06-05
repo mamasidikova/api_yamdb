@@ -71,7 +71,7 @@ class UserViewSet(viewsets.ModelViewSet):
             "patch",
         ],
         detail=False, 
-        url_path="me", #определяем дополнительный эндпоинт /api/v1/users/me/
+        url_path="me",
         permission_classes=[permissions.IsAuthenticated],
         serializer_class=UserEditSerializer,
     )

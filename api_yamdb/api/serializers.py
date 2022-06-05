@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=[
             UniqueValidator(queryset=User.objects.all(), 
-            message=("Username already exists")) # встроенный класс валидатор, принудительно примененяем ограничения unique=True для поля username модели
+            message=("Username already exists"))
         ],
         required=True,
     )
