@@ -138,7 +138,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    """Просмотр и редактирование отзывов на  произведения"""
+    """Просмотр и редактирование отзывов на произведения"""
     serializer_class = ReviewSerializer
     permission_classes = (IsAdminModeratorOwnerOrReadOnly,)
     pagination_class = PageNumberPagination
