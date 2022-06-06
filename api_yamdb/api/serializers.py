@@ -1,8 +1,7 @@
-from rest_framework import serializers
-from rest_framework.relations import SlugRelatedField
 from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
@@ -67,6 +66,7 @@ class TokenSerializer(serializers.Serializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    """ Осуществляет сериализацию генерируемых токенов объектов Category. """
     class Meta:
         model = Category
         fields = ('name', 'slug')

@@ -67,13 +67,13 @@ class Category(models.Model):
         max_length=50,
         unique=True)
 
-    def __str__(self):
-        self.name
-
     class Meta:
-        ordering = ['name']
+        ordering = ('name',)
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
+
+    def __str__(self):
+        self.name
 
 
 class Genre(models.Model):
@@ -85,13 +85,13 @@ class Genre(models.Model):
         max_length=50,
         unique=True)
 
-    def __str__(self):
-        self.name
-
     class Meta:
-        ordering = ['name']
+        ordering = ('name',)
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
+
+    def __str__(self):
+        self.name
 
 
 class Title(models.Model):
@@ -99,10 +99,10 @@ class Title(models.Model):
         verbose_name='Название',
         max_length=100
     )
-    year = models.IntegerField(
+    year = models.PositiveSmallIntegerField(
         verbose_name='Год выпуска',
     )
-    rating = models.IntegerField(
+    rating = models.PositiveSmallIntegerField(
         verbose_name='Рейтинг на основе отзывов',
         null=True,
         blank=True,
@@ -127,6 +127,11 @@ class Title(models.Model):
         verbose_name='Категория'
     )
 
+    class Meta:
+        ordering = ('name',)
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
+
     def validate_year(self, value):
         year = dt.date.today().year
         if value > year:
@@ -136,11 +141,6 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
-
-    class Meta:
-        ordering = ['name']
-        verbose_name = 'Произведение'
-        verbose_name_plural = 'Произведения'
 
 
 class GenreTitle(models.Model):
