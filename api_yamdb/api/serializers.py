@@ -129,6 +129,10 @@ class ReviewSerializer(serializers.ModelSerializer):
     """ Осуществляет сериализацию и десериализацию объектов Review. """
     author = SlugRelatedField(slug_field='username', read_only=True)
 
+    class Meta:
+        model = Review
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
+
     def validate(self, data):
         title_id = self.context['view'].kwargs.get('title_id')
         user = self.context['request'].user
@@ -138,10 +142,6 @@ class ReviewSerializer(serializers.ModelSerializer):
                     'Вы уже оставляли отзыв на это произведение.'
                 )
         return data
-
-    class Meta:
-        model = Review
-        fields = ('id', 'text', 'author', 'score', 'pub_date')
 
 
 class CommentSerializer(serializers.ModelSerializer):

@@ -164,19 +164,20 @@ class Review(models.Model):
     text = models.TextField()
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews')
-    score = models.IntegerField(verbose_name='Рейтинг',)
+    score = models.PositiveSmallIntegerField(verbose_name='Рейтинг',
+                                             null=True, blank=True,)
     pub_date = models.DateTimeField(verbose_name='Дата публикации отзыва',
                                     auto_now_add=True)
+
+    class Meta:
+        unique_together = ('title', 'author')
+        ordering = ('pub_date',)
 
     def validators_score(self, value):
         if value < 1 and value > 10:
             raise ValidationError(
                 ('Рейтинг может быть от 1 до 10')
             )
-
-    class Meta:
-        unique_together = ('title', 'author')
-        ordering = ['pub_date']
 
 
 class Comment(models.Model):
@@ -189,4 +190,4 @@ class Comment(models.Model):
                                     auto_now_add=True)
 
     class Meta:
-        ordering = ['pub_date']
+        ordering = ('pub_date',)
