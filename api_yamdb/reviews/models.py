@@ -15,11 +15,9 @@ class User(AbstractUser):
         (USER, 'User'),
     ]
 
-    username = models.CharField(
-        verbose_name='Пользователь',
-        max_length=150,
-        unique=True
-    )
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ('username',)
+
     email = models.EmailField(
         verbose_name='Почтовый адрес',
         max_length=254,
@@ -37,9 +35,6 @@ class User(AbstractUser):
         blank=True
     )
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-
     @property
     def is_moderator(self):
         return self.role == self.MODERATOR
@@ -52,11 +47,6 @@ class User(AbstractUser):
     def is_user(self):
         return self.role == self.USER
 
-    class Meta:
-        ordering = ['username']
-        verbose_name = 'Пользователь'
-        verbose_name_plural = 'Пользователи'
-
 
 class Category(models.Model):
     name = models.CharField(
@@ -67,13 +57,13 @@ class Category(models.Model):
         max_length=50,
         unique=True)
 
-    def __str__(self):
-        self.name
-
     class Meta:
-        ordering = ['name']
+        ordering = ('name',)
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
+
+    def __str__(self):
+        self.name
 
 
 class Genre(models.Model):
@@ -85,13 +75,13 @@ class Genre(models.Model):
         max_length=50,
         unique=True)
 
-    def __str__(self):
-        self.name
-
     class Meta:
-        ordering = ['name']
+        ordering = ('name',)
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
+
+    def __str__(self):
+        self.name
 
 
 class Title(models.Model):
@@ -102,7 +92,7 @@ class Title(models.Model):
     year = models.IntegerField(
         verbose_name='Год выпуска',
     )
-    rating = models.IntegerField(
+    rating = models.PositiveSmallIntegerField(
         verbose_name='Рейтинг на основе отзывов',
         null=True,
         blank=True,
@@ -127,6 +117,11 @@ class Title(models.Model):
         verbose_name='Категория'
     )
 
+    class Meta:
+        ordering = ('name',)
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
+
     def validate_year(self, value):
         year = dt.date.today().year
         if value > year:
@@ -136,11 +131,6 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
-
-    class Meta:
-        ordering = ['name']
-        verbose_name = 'Произведение'
-        verbose_name_plural = 'Произведения'
 
 
 class GenreTitle(models.Model):
@@ -164,19 +154,19 @@ class Review(models.Model):
     text = models.TextField()
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews')
-    score = models.IntegerField(verbose_name='Рейтинг',)
+    score = models.PositiveSmallIntegerField(verbose_name='Рейтинг',)
     pub_date = models.DateTimeField(verbose_name='Дата публикации отзыва',
                                     auto_now_add=True)
+
+    class Meta:
+        unique_together = ('title', 'author')
+        ordering = ('pub_date',)
 
     def validators_score(self, value):
         if value < 1 and value > 10:
             raise ValidationError(
                 ('Рейтинг может быть от 1 до 10')
             )
-
-    class Meta:
-        unique_together = ('title', 'author')
-        ordering = ['pub_date']
 
 
 class Comment(models.Model):
@@ -189,4 +179,4 @@ class Comment(models.Model):
                                     auto_now_add=True)
 
     class Meta:
-        ordering = ['pub_date']
+        ordering = ('pub_date',)

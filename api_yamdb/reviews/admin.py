@@ -1,11 +1,10 @@
+from django.apps import apps
 from django.contrib import admin
 
-from .models import Category, Comment, Genre, GenreTitle, Review, Title, User
+models = apps.get_models()
 
-admin.site.register(User)
-admin.site.register(Category)
-admin.site.register(Genre)
-admin.site.register(Title)
-admin.site.register(GenreTitle)
-admin.site.register(Review)
-admin.site.register(Comment)
+for model in models:
+    try:
+        admin.site.register(model)
+    except admin.sites.AlreadyRegistered:
+        print(f'Модель {model} уже зарегистрирована.')

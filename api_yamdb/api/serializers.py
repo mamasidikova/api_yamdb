@@ -1,9 +1,9 @@
-from rest_framework import serializers
-from rest_framework.relations import SlugRelatedField
 from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
+
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
@@ -12,27 +12,27 @@ class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=[
             UniqueValidator(queryset=User.objects.all(),
-                            message=("Username already exists"))
+                            message=('Username already exists'))
         ],
         required=True,
     )
     email = serializers.EmailField(
         validators=[
             UniqueValidator(queryset=User.objects.all(),
-                            message=("Email already exists"))
+                            message=('Email already exists'))
         ]
     )
 
     class Meta:
-        fields = ("username", "email", "first_name",
-                  "last_name", "bio", "role")
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role')
         model = User
 
 
 class UserEditSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ("username", "email", "first_name",
-                  "last_name", "bio", "role")
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role')
         model = User
         read_only_fields = ('role',)
 
@@ -50,14 +50,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
         ]
     )
 
+    class Meta:
+        fields = ('username', 'email')
+        model = User
+
     def validate_username(self, value):
-        if value.lower() == "me":
+        if value.lower() == 'me':
             raise serializers.ValidationError("Username 'me' is prohibited")
         return value
-
-    class Meta:
-        fields = ("username", "email")
-        model = User
 
 
 class TokenSerializer(serializers.Serializer):
@@ -129,6 +129,10 @@ class ReviewSerializer(serializers.ModelSerializer):
     """ Осуществляет сериализацию и десериализацию объектов Review. """
     author = SlugRelatedField(slug_field='username', read_only=True)
 
+    class Meta:
+        model = Review
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
+
     def validate(self, data):
         title_id = self.context['view'].kwargs.get('title_id')
         user = self.context['request'].user
@@ -138,10 +142,6 @@ class ReviewSerializer(serializers.ModelSerializer):
                     'Вы уже оставляли отзыв на это произведение.'
                 )
         return data
-
-    class Meta:
-        model = Review
-        fields = ('id', 'text', 'author', 'score', 'pub_date')
 
 
 class CommentSerializer(serializers.ModelSerializer):
